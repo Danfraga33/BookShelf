@@ -50,7 +50,7 @@ export default function ChapterSidebar({
         </div>
         <button
           onClick={onToggleCollapse}
-          className="p-1.5 text-navy-400 hover:text-navy-600 hover:bg-surface rounded-lg transition-colors duration-200"
+          className="cursor-pointer p-1.5 text-navy-400 hover:text-navy-600 hover:bg-surface rounded-lg transition-colors duration-200"
           title="Collapse sidebar"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ export default function ChapterSidebar({
           <div key={chapter.id} className="group relative">
             <button
               onClick={() => onClickChapter(chapter)}
-              className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 flex items-center gap-2.5 ${
+              className={`cursor-pointer w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 flex items-center gap-2.5 ${
                 activeChapterId === chapter.id
                   ? "bg-primary text-white font-medium"
                   : "text-text-secondary hover:bg-surface hover:text-text-primary"
@@ -85,7 +85,7 @@ export default function ChapterSidebar({
             <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex">
               <button
                 onClick={() => setDeleteTarget(chapter)}
-                className="p-1 text-navy-300 hover:text-danger rounded transition-colors duration-200"
+                className="cursor-pointer p-1 text-navy-300 hover:text-danger rounded transition-colors duration-200"
                 title="Delete chapter"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
