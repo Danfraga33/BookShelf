@@ -92,7 +92,7 @@ export default function BookEditor({
         className="flex-1 overflow-y-auto cursor-text pt-16"
         onClick={() => editor?.commands.focus()}
       >
-        <div className="max-w-5xl mx-auto px-8 py-8 min-h-full">
+        <div className="max-w-7xl mx-auto px-6 py-8 min-h-full">
           <EditorContent editor={editor} />
         </div>
       </div>
