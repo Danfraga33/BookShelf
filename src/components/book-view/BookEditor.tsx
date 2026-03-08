@@ -73,19 +73,16 @@ export default function BookEditor({
         <div className="flex items-center gap-0.5 bg-white rounded-xl shadow-md border border-navy-100 px-2 py-1.5">
           <EditorToolbar editor={editor} />
         </div>
-        {saveStatus !== "idle" && (
-          <div className="ml-3 text-xs text-text-muted flex items-center gap-1.5 bg-white rounded-xl shadow-md border border-navy-100 px-3 py-2">
-            {saveStatus === "saving" && "Saving..."}
-            {saveStatus === "saved" && (
-              <>
-                <svg className="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Saved
-              </>
-            )}
-          </div>
-        )}
+        <div className="ml-3 w-20 text-xs text-text-muted flex items-center justify-center gap-1.5 bg-white rounded-xl shadow-md border border-navy-100 px-3 py-2">
+          {saveStatus === "saving" ? "Saving..." : (
+            <>
+              <svg className="w-3.5 h-3.5 text-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Saved
+            </>
+          )}
+        </div>
       </div>
       {/* Content */}
       <div
