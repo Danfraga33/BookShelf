@@ -4,19 +4,23 @@ import DeleteConfirmModal from "~/components/books/DeleteConfirmModal";
 
 interface ChapterSidebarProps {
   chapters: Chapter[];
+  subheadings: Record<string, string[]>;
   activeChapterId: string | null;
   collapsed: boolean;
   onToggleCollapse: () => void;
   onClickChapter: (chapter: Chapter) => void;
+  onClickSubheading: (title: string) => void;
   onDeleteChapter: (id: string) => Promise<unknown>;
 }
 
 export default function ChapterSidebar({
   chapters,
+  subheadings,
   activeChapterId,
   collapsed,
   onToggleCollapse,
   onClickChapter,
+  onClickSubheading,
   onDeleteChapter,
 }: ChapterSidebarProps) {
   const [deleteTarget, setDeleteTarget] = useState<Chapter | null>(null);
@@ -62,37 +66,51 @@ export default function ChapterSidebar({
       <div className="flex-1 overflow-y-auto py-2 px-2">
         {chapters.length === 0 && (
           <p className="text-text-muted text-xs px-2 py-4 text-center">
-            Type an H2 heading in the editor to create a chapter.
+            Type an H1 heading in the editor to create a chapter.
           </p>
         )}
 
         {chapters.map((chapter) => (
-          <div key={chapter.id} className="group relative">
-            <button
-              onClick={() => onClickChapter(chapter)}
-              className={`cursor-pointer w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 flex items-center gap-2.5 ${
-                activeChapterId === chapter.id
-                  ? "bg-primary text-white font-medium"
-                  : "text-text-secondary hover:bg-surface hover:text-text-primary"
-              }`}
-            >
-              <svg className="w-4 h-4 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="truncate">{chapter.title}</span>
-            </button>
+          <div key={chapter.id}>
 
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex">
+            <div className="group relative">
               <button
-                onClick={() => setDeleteTarget(chapter)}
-                className="cursor-pointer p-1 text-navy-300 hover:text-danger rounded transition-colors duration-200"
-                title="Delete chapter"
+                onClick={() => onClickChapter(chapter)}
+                className={`cursor-pointer w-full text-left px-3 py-2.5 text-base rounded-lg transition-all duration-200 flex items-center gap-2.5 ${
+                  activeChapterId === chapter.id
+                    ? "bg-primary text-white font-medium"
+                    : "text-text-secondary hover:bg-surface hover:text-text-primary"
+                }`}
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg className="w-5 h-5 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
+                <span className="truncate">{chapter.title}</span>
               </button>
+              <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex">
+                <button
+                  onClick={() => setDeleteTarget(chapter)}
+                  className="cursor-pointer p-1 text-navy-300 hover:text-danger rounded transition-colors duration-200"
+                  title="Delete chapter"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
+
+            {/* H2 subheadings indented below */}
+            {(subheadings[chapter.title] ?? []).map((sub) => (
+              <button
+                key={sub}
+                onClick={() => onClickSubheading(sub)}
+                className="cursor-pointer w-full text-left pl-10 pr-3 py-1.5 text-sm rounded-lg transition-all duration-200 text-text-muted hover:bg-surface hover:text-text-primary truncate flex items-center gap-2"
+              >
+                <span className="w-1 h-1 rounded-full bg-navy-300 shrink-0" />
+                <span className="truncate">{sub}</span>
+              </button>
+            ))}
           </div>
         ))}
       </div>
@@ -102,7 +120,7 @@ export default function ChapterSidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden md:flex w-60 bg-white border-r border-navy-100 flex-col shrink-0 h-full">
+      <div className="hidden md:flex w-96 bg-white border-r border-navy-100 flex-col shrink-0 h-full">
         {sidebarContent}
       </div>
 
