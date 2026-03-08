@@ -34,7 +34,6 @@ export default function Modal({ open, onClose, children, title }: ModalProps) {
       }}
     >
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 animate-scale-in overflow-hidden">
-        {/* Header */}
         <div className="px-8 pt-8 pb-6">
           <h2 className="font-display text-5xl font-bold text-text-primary leading-tight">{title}</h2>
           <p className="text-text-muted text-lg mt-1">Add a new title</p>
