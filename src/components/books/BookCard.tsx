@@ -87,11 +87,11 @@ export default function BookCard({ book, onEdit, onDelete }: BookCardProps) {
 
       {/* Book info below cover */}
       <div className="mt-3">
-        <h3 className="font-display font-semibold text-lg text-text-primary truncate leading-snug">
+        <h3 className="font-display font-semibold text-xl text-text-primary truncate leading-snug">
           {book.title}
         </h3>
         {book.description && (
-          <p className="font-display text-md text-text-secondary mt-0.5 truncate">
+          <p className="font-display text-lg text-text-secondary mt-0.5 truncate">
             {book.description}
           </p>
         )}
