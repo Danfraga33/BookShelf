@@ -31,31 +31,42 @@ export default function BookForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        id="book-title"
-        label="Title"
-        placeholder="Enter book title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-        autoFocus
-      />
-      <Textarea
-        id="book-description"
-        label="Description"
-        placeholder="A brief description (optional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        rows={3}
-      />
-      <div className="flex justify-end gap-3 pt-2">
-        <Button variant="secondary" type="button" onClick={onCancel}>
+    <form onSubmit={handleSubmit}>
+      <div className="space-y-5">
+        <Input
+          id="book-title"
+          label="Title"
+          placeholder="Enter book title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          autoFocus
+        />
+        <Textarea
+          id="book-description"
+          label="Description"
+          placeholder="A brief description (optional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+        />
+      </div>
+      <div className="h-px bg-navy-100 -mx-8 mt-6" />
+      <div className="flex justify-end gap-3 pt-5 -mx-8 px-8 pb-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="cursor-pointer px-8 py-3 rounded-4xl text-base font-medium text-text-secondary border border-navy-200 hover:bg-surface transition-colors duration-200"
+        >
           Cancel
-        </Button>
-        <Button type="submit" disabled={!title.trim() || submitting}>
+        </button>
+        <button
+          type="submit"
+          disabled={!title.trim() || submitting}
+          className="cursor-pointer px-8 py-3 rounded-4xl text-base font-medium bg-[#1a2533] text-white hover:bg-[#0f1820] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+        >
           {submitting ? "Saving..." : submitLabel}
-        </Button>
+        </button>
       </div>
     </form>
   );
