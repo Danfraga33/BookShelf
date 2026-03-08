@@ -33,9 +33,17 @@ export default function Modal({ open, onClose, children, title }: ModalProps) {
         if (e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6 animate-scale-in">
-        <h2 className="text-xl font-bold text-text-primary mb-4">{title}</h2>
-        {children}
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 animate-scale-in overflow-hidden">
+        {/* Header */}
+        <div className="px-8 pt-8 pb-6">
+          <h2 className="font-display text-5xl font-bold text-text-primary leading-tight">{title}</h2>
+          <p className="text-text-muted text-lg mt-1">Add a new title</p>
+        </div>
+        <div className="h-px bg-navy-100 mx-8" />
+        
+        <div className="px-8 py-6">
+          {children}
+        </div>
       </div>
     </div>
   );
