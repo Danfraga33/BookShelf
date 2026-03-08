@@ -24,12 +24,33 @@ function getH1Titles(doc: JSONContent): string[] {
   return titles;
 }
 
+// Returns H2s grouped under their nearest preceding H1
+function getSubheadings(doc: JSONContent): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  let currentH1 = "";
+  const walk = (node: JSONContent) => {
+    if (node.type === "heading") {
+      const text = node.content?.map((n) => n.text ?? "").join("").trim() ?? "";
+      if (node.attrs?.level === 1) {
+        currentH1 = text;
+      } else if (node.attrs?.level === 2 && currentH1 && text) {
+        if (!result[currentH1]) result[currentH1] = [];
+        result[currentH1].push(text);
+      }
+    }
+    node.content?.forEach(walk);
+  };
+  if (doc.content) doc.content.forEach(walk);
+  return result;
+}
+
 export default function BookPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [bookTitle, setBookTitle] = useState("");
   const [bookLoading, setBookLoading] = useState(true);
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
+  const [subheadings, setSubheadings] = useState<Record<string, string[]>>({});
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
   });
@@ -76,6 +97,16 @@ export default function BookPage() {
     }
   }, []);
 
+  const handleClickSubheading = useCallback((title: string) => {
+    const headings = document.querySelectorAll(".tiptap h2");
+    for (const h of headings) {
+      if (h.textContent?.trim() === title.trim()) {
+        h.scrollIntoView({ behavior: "smooth", block: "start" });
+        break;
+      }
+    }
+  }, []);
+
   const syncChaptersFromDoc = useCallback(async (doc: JSONContent) => {
     const docTitles = getH1Titles(doc);
     const current = chaptersRef.current;
@@ -112,6 +143,7 @@ export default function BookPage() {
 
   const handleEditorUpdate = useCallback((json: JSONContent) => {
     debouncedSave(json);
+    setSubheadings(getSubheadings(json));
     // Debounce chapter sync — only fires 1.5s after typing stops
     if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
     syncTimerRef.current = setTimeout(() => {
@@ -141,11 +173,16 @@ export default function BookPage() {
       sidebar={
         <ChapterSidebar
           chapters={chapters}
+          subheadings={subheadings}
           activeChapterId={activeChapterId}
           collapsed={effectiveCollapsed}
           onToggleCollapse={effectiveToggle}
           onClickChapter={(ch) => {
             handleClickChapter(ch);
+            if (isMobile) setMobileSidebarOpen(false);
+          }}
+          onClickSubheading={(title) => {
+            handleClickSubheading(title);
             if (isMobile) setMobileSidebarOpen(false);
           }}
           onDeleteChapter={deleteChapter}
