@@ -43,12 +43,12 @@ export default function ChapterSidebar({
 
   const sidebarContent = (
     <>
-      <div className="flex items-center justify-between px-4 py-3 border-b border-navy-100">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-navy-100">
         <div>
-          <span className="text-sm font-semibold text-text-primary block">
+          <span className="text-base font-semibold text-text-primary block">
             Table of Contents
           </span>
-          <span className="text-xs text-text-muted">
+          <span className="text-sm text-text-muted">
             {chapters.length} Chapter{chapters.length !== 1 ? "s" : ""}
           </span>
         </div>
