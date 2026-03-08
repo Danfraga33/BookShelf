@@ -8,7 +8,7 @@ export default function Input({ label, className = "", id, ...props }: InputProp
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-text-primary">
+        <label htmlFor={id} className="text-lg font-medium text-text-primary">
           {label}
         </label>
       )}

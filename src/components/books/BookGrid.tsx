@@ -32,7 +32,7 @@ function EmptyState({ onCreate }: { onCreate?: () => void }) {
       <div className="w-48 h-48 mb-8 relative">
           <img src="/books.jpg" className="rounded-xl "  alt="" />
       </div>
-      <h3 className="font-heading text-xl font-bold text-text-primary mb-2">
+      <h3 className="font-display text-4xl font-bold text-text-primary mb-2">
         Your Bookshelf is empty
       </h3>
       <p className="text-text-secondary text-sm max-w-sm mb-8">
