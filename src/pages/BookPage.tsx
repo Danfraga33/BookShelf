@@ -56,10 +56,9 @@ export default function BookPage() {
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const editorRef = useRef<Editor | null>(null);
-  const lastSyncedTitles = useRef<string[]>([]);
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { chapters, addChapter, renameChapter, deleteChapter } = useChapters(id);
+  const { chapters, addChapter, renameChapter, deleteChapter, reorderChapters } = useChapters(id);
   const chaptersRef = useRef<Chapter[]>([]);
   chaptersRef.current = chapters;
 
@@ -110,13 +109,11 @@ export default function BookPage() {
   const syncChaptersFromDoc = useCallback(async (doc: JSONContent) => {
     const docTitles = getH1Titles(doc);
     const current = chaptersRef.current;
-
-    if (JSON.stringify(docTitles) === JSON.stringify(lastSyncedTitles.current)) return;
-    lastSyncedTitles.current = docTitles;
-
     const currentTitles = current.map((c) => c.title);
 
-    // Same count, same order — just rename changed positions
+    if (JSON.stringify(docTitles) === JSON.stringify(currentTitles)) return;
+
+    // Same count — rename changed positions in-place (handles typing a heading)
     if (docTitles.length === current.length) {
       for (let i = 0; i < docTitles.length; i++) {
         if (current[i].title !== docTitles[i]) {
@@ -133,13 +130,25 @@ export default function BookPage() {
       }
     }
 
-    // Add new titles
+    // Add new chapters, collecting the new records
+    const newChapters: typeof current = [];
     for (const title of docTitles) {
       if (!currentTitles.includes(title)) {
-        await addChapter(title);
+        const result = await addChapter(title);
+        if (result?.data) newChapters.push(result.data);
       }
     }
-  }, [addChapter, deleteChapter, renameChapter]);
+
+    // Build reordered list from surviving + newly added chapters
+    const surviving = current.filter((c) => docTitles.includes(c.title));
+    const allChapters = [...surviving, ...newChapters];
+    const reordered = docTitles
+      .map((title) => allChapters.find((c) => c.title === title))
+      .filter(Boolean) as typeof current;
+    if (reordered.length > 0) {
+      await reorderChapters(reordered);
+    }
+  }, [addChapter, renameChapter, deleteChapter, reorderChapters]);
 
   const handleEditorUpdate = useCallback((json: JSONContent) => {
     debouncedSave(json);
