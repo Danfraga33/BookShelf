@@ -1,4 +1,4 @@
-import { useEditor as useTiptapEditor, EditorContent } from "@tiptap/react";
+import { useEditor as useTiptapEditor, EditorContent, Extension } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -7,6 +7,16 @@ import { useEffect } from "react";
 import type { JSONContent } from "@tiptap/react";
 import EditorToolbar from "./EditorToolbar";
 import Spinner from "~/components/ui/Spinner";
+
+const TabIndent = Extension.create({
+  name: "tabIndent",
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => this.editor.commands.sinkListItem("listItem"),
+      "Shift-Tab": () => this.editor.commands.liftListItem("listItem"),
+    };
+  },
+});
 
 interface BookEditorProps {
   content: JSONContent | null;
@@ -30,6 +40,7 @@ export default function BookEditor({
       }),
       Underline,
       Image,
+      TabIndent,
     ],
     content: content ?? undefined,
     onUpdate: ({ editor }) => {
