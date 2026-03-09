@@ -107,6 +107,15 @@ export default function EditorToolbar({ editor }: EditorToolbarProps) {
         </svg>
       </ToolButton>
 
+      <ToolButton
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        title="Divider"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
+        </svg>
+      </ToolButton>
+
       <div className="w-px h-5 bg-navy-100 mx-1.5" />
 
       <ToolButton
