@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@neondatabase/auth/ui/tailwind";
 
 @theme {
   /* Animations */
@@ -138,6 +139,45 @@ body {
 
 .tiptap li li p {
   font-size: 1.3rem;
+}
+
+/* Tables */
+.tiptap table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 1.4rem;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.tiptap table th,
+.tiptap table td {
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 80px;
+  position: relative;
+}
+
+.tiptap table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #1a2533;
+}
+
+.tiptap table tr:nth-child(even) td {
+  background-color: #f9fafb;
+}
+
+.tiptap table .selectedCell::after {
+  background: rgba(59, 130, 246, 0.12);
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .tiptap hr {

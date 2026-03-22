@@ -3,6 +3,10 @@ import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Image from "@tiptap/extension-image";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table/row";
+import { TableCell } from "@tiptap/extension-table/cell";
+import { TableHeader } from "@tiptap/extension-table/header";
 import { useEffect } from "react";
 import type { JSONContent } from "@tiptap/react";
 import EditorToolbar from "./EditorToolbar";
@@ -40,6 +44,10 @@ export default function BookEditor({
       }),
       Underline,
       Image,
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableCell,
+      TableHeader,
       TabIndent,
     ],
     content: content ?? undefined,
