@@ -5,6 +5,7 @@ import { sql } from "~/lib/db";
 export interface Book {
   id: string;
   user_id: string;
+  shelf_id: string | null;
   title: string;
   description: string | null;
   created_at: string;
@@ -33,12 +34,12 @@ export function useBooks() {
     fetchBooks();
   }, [fetchBooks]);
 
-  const createBook = async (title: string, description: string) => {
+  const createBook = async (title: string, description: string, shelfId?: string | null) => {
     if (!userId) return { error: new Error("Not authenticated") };
 
     const rows = await sql`
-      INSERT INTO books (title, description, user_id)
-      VALUES (${title}, ${description}, ${userId})
+      INSERT INTO books (title, description, user_id, shelf_id)
+      VALUES (${title}, ${description}, ${userId}, ${shelfId ?? null})
       RETURNING *
     `;
     const book = rows[0] as Book;
@@ -55,8 +56,12 @@ export function useBooks() {
 
   const updateBook = async (
     id: string,
-    updates: { title?: string; description?: string }
+    updates: { title?: string; description?: string; shelf_id?: string | null }
   ) => {
+    // Handle shelf_id separately since COALESCE won't work for setting to null
+    if (updates.shelf_id !== undefined) {
+      await sql`UPDATE books SET shelf_id = ${updates.shelf_id} WHERE id = ${id}`;
+    }
     const rows = await sql`
       UPDATE books
       SET title = COALESCE(${updates.title ?? null}, title),
