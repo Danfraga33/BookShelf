@@ -7,3 +7,7 @@
 CLAUDE.md
 
 .vercel
+tsconfig.tsbuildinfo
+.agents/
+.serena/
+docs/
