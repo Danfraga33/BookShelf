@@ -81,7 +81,7 @@ export default function ShelfGroup({
           ) : (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="cursor-pointer font-heading font-semibold text-lg text-text-primary hover:text-primary transition-colors"
+              className="cursor-pointer font-heading font-bold text-lg text-text-primary hover:text-primary transition-colors"
             >
               {shelf.name}
             </button>
