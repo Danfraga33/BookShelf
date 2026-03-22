@@ -239,6 +239,11 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Neon Auth button cursor override */
+.neon-auth-wrapper button {
+  cursor: pointer;
+}
+
 /* Line clamp utility */
 .line-clamp-2 {
   display: -webkit-box;

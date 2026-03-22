@@ -46,7 +46,9 @@ export default function AuthPage() {
         {/* Right form panel — Neon Auth handles sign-in/sign-up toggle */}
         <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-12 lg:px-16">
           <div className="w-full max-w-md animate-slide-up">
-            <AuthView pathname={path || "sign-in"} />
+            <div className="neon-auth-wrapper">
+              <AuthView pathname={path || "sign-in"} />
+            </div>
           </div>
         </div>
       </div>
