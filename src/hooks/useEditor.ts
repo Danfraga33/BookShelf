@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "~/lib/supabase";
+import { sql } from "~/lib/db";
 import type { JSONContent } from "@tiptap/react";
 
 export function useEditor(bookId: string | undefined) {
@@ -13,14 +13,12 @@ export function useEditor(bookId: string | undefined) {
   const fetchContent = useCallback(async () => {
     if (!bookId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("book_content")
-      .select("content")
-      .eq("book_id", bookId)
-      .single();
+    const rows = await sql`
+      SELECT content FROM book_content WHERE book_id = ${bookId} LIMIT 1
+    `;
 
-    if (!error && data) {
-      setContent(data.content as JSONContent);
+    if (rows.length > 0 && rows[0].content) {
+      setContent(rows[0].content as JSONContent);
     } else {
       setContent({ type: "doc", content: [] });
     }
@@ -35,19 +33,17 @@ export function useEditor(bookId: string | undefined) {
     async (json: JSONContent) => {
       if (!bookId) return;
       setSaveStatus("saving");
-      await supabase
-        .from("book_content")
-        .update({
-          content: json,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("book_id", bookId);
+
+      await sql`
+        UPDATE book_content
+        SET content = ${JSON.stringify(json)}, updated_at = now()
+        WHERE book_id = ${bookId}
+      `;
 
       // Also update book's updated_at
-      await supabase
-        .from("books")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", bookId);
+      await sql`
+        UPDATE books SET updated_at = now() WHERE id = ${bookId}
+      `;
 
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);

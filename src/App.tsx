@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "~/hooks/useAuth";
 import AuthPage from "~/pages/AuthPage";
 import DashboardPage from "~/pages/DashboardPage";
 import BookPage from "~/pages/BookPage";
-import { useAuth } from "~/hooks/useAuth";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -14,7 +14,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/:path" element={<AuthPage />} />
+      <Route path="/auth" element={<Navigate to="/auth/sign-in" replace />} />
       <Route
         path="/"
         element={

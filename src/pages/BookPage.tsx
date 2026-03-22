@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "~/lib/supabase";
+import { sql } from "~/lib/db";
 import { useChapters } from "~/hooks/useChapters";
 import { useEditor } from "~/hooks/useEditor";
 import type { Chapter } from "~/hooks/useChapters";
@@ -67,12 +67,8 @@ export default function BookPage() {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const { data } = await supabase
-        .from("books")
-        .select("title")
-        .eq("id", id)
-        .single();
-      if (data) setBookTitle(data.title);
+      const rows = await sql`SELECT title FROM books WHERE id = ${id} LIMIT 1`;
+      if (rows.length > 0) setBookTitle(rows[0].title);
       setBookLoading(false);
     })();
   }, [id]);

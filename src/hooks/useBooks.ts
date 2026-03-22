@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "~/lib/supabase";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "~/hooks/useAuth";
+import { sql } from "~/lib/db";
 
 export interface Book {
   id: string;
@@ -11,68 +12,68 @@ export interface Book {
 }
 
 export function useBooks() {
+  const { user } = useAuth();
+  const userId = user?.id;
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasFetched = useRef(false);
 
   const fetchBooks = useCallback(async () => {
+    if (!userId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("books")
-      .select("*")
-      .order("updated_at", { ascending: false });
-    if (!error && data) setBooks(data);
+    const rows = await sql`
+      SELECT * FROM books WHERE user_id = ${userId} ORDER BY updated_at DESC
+    `;
+    setBooks(rows as Book[]);
     setLoading(false);
-  }, []);
+    hasFetched.current = true;
+  }, [userId]);
 
   useEffect(() => {
     fetchBooks();
   }, [fetchBooks]);
 
   const createBook = async (title: string, description: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { error: new Error("Not authenticated") };
+    if (!userId) return { error: new Error("Not authenticated") };
 
-    const { data, error } = await supabase
-      .from("books")
-      .insert({ title, description, user_id: user.id })
-      .select()
-      .single();
+    const rows = await sql`
+      INSERT INTO books (title, description, user_id)
+      VALUES (${title}, ${description}, ${userId})
+      RETURNING *
+    `;
+    const book = rows[0] as Book;
 
-    if (!error && data) {
-      setBooks((prev) => [data, ...prev]);
-      // Create empty book_content row
-      await supabase
-        .from("book_content")
-        .insert({ book_id: data.id, content: { type: "doc", content: [] } });
-    }
-    return { data, error };
+    // Create empty book_content row
+    await sql`
+      INSERT INTO book_content (book_id, content)
+      VALUES (${book.id}, ${JSON.stringify({ type: "doc", content: [] })})
+    `;
+
+    setBooks((prev) => [book, ...prev]);
+    return { data: book, error: null };
   };
 
   const updateBook = async (
     id: string,
     updates: { title?: string; description?: string }
   ) => {
-    const { data, error } = await supabase
-      .from("books")
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (!error && data) {
-      setBooks((prev) => prev.map((b) => (b.id === id ? data : b)));
-    }
-    return { data, error };
+    const rows = await sql`
+      UPDATE books
+      SET title = COALESCE(${updates.title ?? null}, title),
+          description = COALESCE(${updates.description ?? null}, description),
+          updated_at = now()
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    const book = rows[0] as Book;
+    setBooks((prev) => prev.map((b) => (b.id === id ? book : b)));
+    return { data: book, error: null };
   };
 
   const deleteBook = async (id: string) => {
-    const { error } = await supabase.from("books").delete().eq("id", id);
-    if (!error) {
-      setBooks((prev) => prev.filter((b) => b.id !== id));
-    }
-    return { error };
+    await sql`DELETE FROM books WHERE id = ${id}`;
+    setBooks((prev) => prev.filter((b) => b.id !== id));
+    return { error: null };
   };
 
   return { books, loading, createBook, updateBook, deleteBook, refetch: fetchBooks };

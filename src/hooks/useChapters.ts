@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "~/lib/supabase";
+import { sql } from "~/lib/db";
 
 export interface Chapter {
   id: string;
@@ -16,12 +16,10 @@ export function useChapters(bookId: string | undefined) {
   const fetchChapters = useCallback(async () => {
     if (!bookId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("chapters")
-      .select("*")
-      .eq("book_id", bookId)
-      .order("position", { ascending: true });
-    if (!error && data) setChapters(data);
+    const rows = await sql`
+      SELECT * FROM chapters WHERE book_id = ${bookId} ORDER BY position ASC
+    `;
+    setChapters(rows as Chapter[]);
     setLoading(false);
   }, [bookId]);
 
@@ -36,50 +34,39 @@ export function useChapters(bookId: string | undefined) {
         ? Math.max(...chapters.map((c) => c.position)) + 1
         : 0;
 
-    const { data, error } = await supabase
-      .from("chapters")
-      .insert({ book_id: bookId, title, position: nextPosition })
-      .select()
-      .single();
-
-    if (!error && data) {
-      setChapters((prev) => [...prev, data]);
-    }
-    return { data, error };
+    const rows = await sql`
+      INSERT INTO chapters (book_id, title, position)
+      VALUES (${bookId}, ${title}, ${nextPosition})
+      RETURNING *
+    `;
+    const chapter = rows[0] as Chapter;
+    setChapters((prev) => [...prev, chapter]);
+    return { data: chapter, error: null };
   };
 
   const renameChapter = async (id: string, title: string) => {
-    const { data, error } = await supabase
-      .from("chapters")
-      .update({ title })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (!error && data) {
-      setChapters((prev) => prev.map((c) => (c.id === id ? data : c)));
-    }
-    return { data, error };
+    const rows = await sql`
+      UPDATE chapters SET title = ${title} WHERE id = ${id} RETURNING *
+    `;
+    const chapter = rows[0] as Chapter;
+    setChapters((prev) => prev.map((c) => (c.id === id ? chapter : c)));
+    return { data: chapter, error: null };
   };
 
   const deleteChapter = async (id: string) => {
-    const { error } = await supabase.from("chapters").delete().eq("id", id);
-    if (!error) {
-      setChapters((prev) => prev.filter((c) => c.id !== id));
-    }
-    return { error };
+    await sql`DELETE FROM chapters WHERE id = ${id}`;
+    setChapters((prev) => prev.filter((c) => c.id !== id));
+    return { error: null };
   };
 
   const reorderChapters = async (reordered: Chapter[]) => {
     setChapters(reordered);
-    const updates = reordered.map((c, i) => ({
-      id: c.id,
-      book_id: c.book_id,
-      title: c.title,
-      position: i,
-      created_at: c.created_at,
-    }));
-    await supabase.from("chapters").upsert(updates);
+    // Update each chapter's position
+    await Promise.all(
+      reordered.map((c, i) =>
+        sql`UPDATE chapters SET position = ${i} WHERE id = ${c.id}`
+      )
+    );
   };
 
   return {
