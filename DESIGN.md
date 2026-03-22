@@ -188,15 +188,27 @@ The app should feel like a real book — warm, focused, and distraction-free. Th
 - Logo: `font-heading font-bold text-lg text-text-primary`
 - User avatar: `w-8 h-8 rounded-full`
 
+### Shelf Group
+- Shelf header row: `flex items-center justify-between py-3`
+- Shelf name: `font-heading font-semibold text-lg text-text-primary`
+- Shelf actions (rename/delete): ghost icon buttons, visible on hover
+- Collapsible: click shelf name to expand/collapse the group
+- Books within a shelf render as the standard card grid below the header
+- "Unshelved" section at the bottom for books with no shelf assignment
+
 ---
 
 ## Layout Architecture
 
 ### 1. Dashboard — Bookshelf View
-- Responsive card grid (3 cols -> 2 -> 1 on smaller screens)
+- Books are grouped under shelf headings
+- Each shelf is a collapsible section with its name as the header
+- Ungrouped books appear in an "Unshelved" section at the bottom
+- "+ New Shelf" button near the top of the dashboard
+- Responsive card grid (3 cols -> 2 -> 1 on smaller screens) within each shelf
 - Each card is clickable to open the book
 - Edit / Delete actions are icon buttons on the card (visible on hover)
-- "New Book" opens a modal with title + description fields
+- "New Book" opens a modal with title, description, and optional shelf selector
 
 ### 2. Book View — Reading/Writing Mode
 - Left sidebar: fixed width (260px) when expanded, collapses to 48px rail
@@ -211,10 +223,29 @@ The app should feel like a real book — warm, focused, and distraction-free. Th
 
 ## Interaction Design
 
+### Creating a Shelf
+1. Click "+ New Shelf" on the dashboard
+2. Inline input appears (or small modal) for the shelf name
+3. Press Enter or submit — shelf section appears on the dashboard
+
+### Renaming a Shelf
+1. Hover over the shelf header — rename icon appears
+2. Click rename — shelf name becomes an editable inline input
+3. Press Enter to save, Escape to cancel
+
+### Deleting a Shelf
+1. Hover over the shelf header — delete icon appears
+2. Click delete — confirmation modal: "Delete shelf '[Name]'? Books in this shelf will become ungrouped."
+3. Confirm — shelf removed, its books move to Unshelved
+
+### Assigning a Book to a Shelf
+- When creating or editing a book, an optional shelf dropdown is available
+- Books can also be reassigned via the book's edit modal
+
 ### Creating a Book
 1. Click "+ New Book"
-2. Modal opens with Title (required) and Description (optional) fields
-3. Submit -> book appears in grid, modal closes
+2. Modal opens with Title (required), Description (optional), and Shelf (optional dropdown)
+3. Submit -> book appears in the selected shelf's grid (or Unshelved), modal closes
 
 ### Deleting a Book
 1. Click delete icon on book card
