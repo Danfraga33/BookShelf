@@ -1,11 +1,14 @@
 import { useState } from "react";
 import Input from "~/components/ui/Input";
 import Textarea from "~/components/ui/Textarea";
+import type { Shelf } from "~/hooks/useShelves";
 
 interface BookFormProps {
   initialTitle?: string;
   initialDescription?: string;
-  onSubmit: (title: string, description: string) => Promise<void>;
+  initialShelfId?: string | null;
+  shelves?: Shelf[];
+  onSubmit: (title: string, description: string, shelfId: string | null) => Promise<void>;
   onCancel: () => void;
   submitLabel: string;
 }
@@ -13,19 +16,22 @@ interface BookFormProps {
 export default function BookForm({
   initialTitle = "",
   initialDescription = "",
+  initialShelfId = null,
+  shelves = [],
   onSubmit,
   onCancel,
   submitLabel,
 }: BookFormProps) {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
+  const [shelfId, setShelfId] = useState<string | null>(initialShelfId);
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     setSubmitting(true);
-    await onSubmit(title.trim(), description.trim());
+    await onSubmit(title.trim(), description.trim(), shelfId);
     setSubmitting(false);
   };
 
@@ -49,6 +55,24 @@ export default function BookForm({
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
         />
+        {shelves.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="book-shelf" className="text-lg font-medium text-text-primary">
+              Shelf
+            </label>
+            <select
+              id="book-shelf"
+              value={shelfId ?? ""}
+              onChange={(e) => setShelfId(e.target.value || null)}
+              className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2.5 text-base text-text-primary focus:border-primary focus:ring-2 focus:ring-primary-light outline-none transition-colors"
+            >
+              <option value="">No shelf (unshelved)</option>
+              {shelves.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <div className="h-px bg-navy-100 -mx-8 mt-6" />
       <div className="flex justify-end gap-3 pt-5 -mx-8 px-8 pb-2">
