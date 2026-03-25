@@ -88,7 +88,7 @@ export default function BookEditor({
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-surface-warm relative">
       {/* Toolbar — sticky at top, scrollable on small screens */}
-      <div className="sticky top-0 z-10 flex items-center gap-1 px-2 py-2 bg-surface-warm border-b border-navy-100 overflow-x-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-1 px-2 py-2 bg-surface-warm border-b border-navy-100 overflow-x-auto">
         <div className="flex items-center gap-0.5 bg-white rounded-xl shadow-sm border border-navy-100 px-2 py-1.5 shrink-0">
           <EditorToolbar editor={editor} />
         </div>
