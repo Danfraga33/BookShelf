@@ -87,12 +87,12 @@ export default function BookEditor({
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-surface-warm relative">
-      {/* Floating toolbar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1">
-        <div className="flex items-center gap-0.5 bg-white rounded-xl shadow-md border border-navy-100 px-2 py-1.5">
+      {/* Toolbar — sticky at top, scrollable on small screens */}
+      <div className="sticky top-0 z-10 flex items-center gap-1 px-2 py-2 bg-surface-warm border-b border-navy-100 overflow-x-auto">
+        <div className="flex items-center gap-0.5 bg-white rounded-xl shadow-sm border border-navy-100 px-2 py-1.5 shrink-0">
           <EditorToolbar editor={editor} />
         </div>
-        <div className="ml-3 w-20 text-xs text-text-muted flex items-center justify-center gap-1.5 bg-white rounded-xl shadow-md border border-navy-100 px-3 py-2">
+        <div className="ml-2 shrink-0 text-xs text-text-muted flex items-center justify-center gap-1.5 bg-white rounded-xl shadow-sm border border-navy-100 px-3 py-2">
           {saveStatus === "saving" ? "Saving..." : (
             <>
               <svg className="w-3.5 h-3.5 text-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,10 +105,10 @@ export default function BookEditor({
       </div>
       {/* Content */}
       <div
-        className="flex-1 overflow-y-auto cursor-text pt-16"
+        className="flex-1 overflow-y-auto cursor-text"
         onClick={() => editor?.commands.focus()}
       >
-        <div className="max-w-7xl mx-auto px-6 py-8 min-h-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 min-h-full">
           <EditorContent editor={editor} />
         </div>
       </div>
