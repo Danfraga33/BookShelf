@@ -92,8 +92,8 @@ export default function ShelfGroup({
           </span>
         </div>
 
-        {/* Shelf actions — visible on hover */}
-        <div className="flex items-center gap-1 opacity-0 group-hover/shelf:opacity-100 transition-opacity duration-200">
+        {/* Shelf actions — always visible on mobile, hover on desktop */}
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover/shelf:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => {
               setEditName(shelf.name);
