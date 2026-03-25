@@ -59,8 +59,8 @@ export default function BookCard({ book, onEdit, onDelete }: BookCardProps) {
           {/* Subtle inner highlight */}
           <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/10 to-transparent" />
 
-          {/* Action buttons — always visible on mobile, hover on desktop */}
-          <div className={`absolute top-2 right-2 gap-1 flex sm:hidden ${hovered ? "sm:flex animate-fade-in" : "sm:hidden"}`}>
+          {/* Action buttons — always visible on mobile, shown on hover on desktop */}
+          <div className={`absolute top-2 right-2 gap-1 ${hovered ? "flex animate-fade-in" : "flex sm:hidden"}`}>
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(book); }}
                 className="cursor-pointer p-1.5 bg-white/90 backdrop-blur-sm rounded-md hover:bg-white text-navy-500 hover:text-navy-800 transition-colors duration-200"
