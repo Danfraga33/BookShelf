@@ -7,6 +7,7 @@ import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
+import { Markdown } from "tiptap-markdown";
 import { useEffect } from "react";
 import type { JSONContent } from "@tiptap/react";
 import EditorToolbar from "./EditorToolbar";
@@ -48,6 +49,7 @@ export default function BookEditor({
       TableRow,
       TableCell,
       TableHeader,
+      Markdown,
       TabIndent,
     ],
     content: content ?? undefined,
