@@ -49,7 +49,10 @@ export default function BookEditor({
       TableRow,
       TableCell,
       TableHeader,
-      Markdown,
+      Markdown.configure({
+        transformPastedText: true,
+        transformCopiedText: true,
+      }),
       TabIndent,
     ],
     content: content ?? undefined,
