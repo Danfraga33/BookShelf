@@ -63,6 +63,19 @@ export default function BookEditor({
       attributes: {
         class: "tiptap focus:outline-none",
       },
+      handlePaste: (_view, event) => {
+        // If clipboard has plain text that looks like markdown (tables, headers, etc.),
+        // force the editor to use the plain-text version so tiptap-markdown can parse it
+        const text = event.clipboardData?.getData("text/plain") ?? "";
+        const hasMarkdownTable = /^\|.+\|/m.test(text) && /^\|[-:| ]+\|/m.test(text);
+        const hasMarkdownSyntax = /^#{1,6}\s|^\*\*|^[-*]\s|^>\s|^```/m.test(text);
+        if (hasMarkdownTable || hasMarkdownSyntax) {
+          event.preventDefault();
+          editor?.commands.insertContent(text);
+          return true;
+        }
+        return false;
+      },
     },
   });
 
