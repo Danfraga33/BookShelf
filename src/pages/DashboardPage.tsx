@@ -3,17 +3,23 @@ import { useBooks } from "~/hooks/useBooks";
 import type { Book } from "~/hooks/useBooks";
 import { useShelves } from "~/hooks/useShelves";
 import type { Shelf } from "~/hooks/useShelves";
+import { useTopics } from "~/hooks/useTopics";
 import { useAuth } from "~/hooks/useAuth";
 import BookGrid from "~/components/books/BookGrid";
 import BookForm from "~/components/books/BookForm";
 import DeleteConfirmModal from "~/components/books/DeleteConfirmModal";
 import ShelfGroup from "~/components/shelves/ShelfGroup";
 import BookCard from "~/components/books/BookCard";
+import TopicSwitcher from "~/components/topics/TopicSwitcher";
 import Modal from "~/components/ui/Modal";
 
 export default function DashboardPage() {
-  const { books, loading: booksLoading, createBook, updateBook, deleteBook, refetch: refetchBooks } = useBooks();
-  const { shelves, loading: shelvesLoading, createShelf, renameShelf, deleteShelf } = useShelves();
+  const {
+    topics, loading: topicsLoading, activeTopicId, selectTopic,
+    createTopic, renameTopic, deleteTopic,
+  } = useTopics();
+  const { books, loading: booksLoading, createBook, updateBook, deleteBook, refetch: refetchBooks } = useBooks(activeTopicId);
+  const { shelves, loading: shelvesLoading, createShelf, renameShelf, deleteShelf } = useShelves(activeTopicId);
   const { user, signOut } = useAuth();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -31,7 +37,7 @@ export default function DashboardPage() {
     if (creatingShelf) newShelfInputRef.current?.focus();
   }, [creatingShelf]);
 
-  const loading = booksLoading || shelvesLoading;
+  const loading = booksLoading || shelvesLoading || topicsLoading;
 
   const filteredBooks = books.filter((b) =>
     b.title.toLowerCase().includes(search.toLowerCase())
@@ -77,6 +83,15 @@ export default function DashboardPage() {
           <span className="font-display font-bold text-2xl text-text-primary leading-none translate-y-px">
             Bookshelf
           </span>
+          <div className="w-px h-5 bg-navy-200 mx-1" />
+          <TopicSwitcher
+            topics={topics}
+            activeTopicId={activeTopicId}
+            onSelect={selectTopic}
+            onCreate={createTopic}
+            onRename={renameTopic}
+            onDelete={deleteTopic}
+          />
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative">

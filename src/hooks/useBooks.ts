@@ -6,13 +6,14 @@ export interface Book {
   id: string;
   user_id: string;
   shelf_id: string | null;
+  topic_id: string | null;
   title: string;
   description: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export function useBooks() {
+export function useBooks(topicId?: string | null) {
   const { user } = useAuth();
   const userId = user?.id;
   const [books, setBooks] = useState<Book[]>([]);
@@ -22,13 +23,20 @@ export function useBooks() {
   const fetchBooks = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
-    const rows = await sql`
-      SELECT * FROM books WHERE user_id = ${userId} ORDER BY updated_at DESC
-    `;
+    let rows;
+    if (topicId) {
+      rows = await sql`
+        SELECT * FROM books WHERE user_id = ${userId} AND topic_id = ${topicId} ORDER BY updated_at DESC
+      `;
+    } else {
+      rows = await sql`
+        SELECT * FROM books WHERE user_id = ${userId} AND topic_id IS NULL ORDER BY updated_at DESC
+      `;
+    }
     setBooks(rows as Book[]);
     setLoading(false);
     hasFetched.current = true;
-  }, [userId]);
+  }, [userId, topicId]);
 
   useEffect(() => {
     fetchBooks();
@@ -38,8 +46,8 @@ export function useBooks() {
     if (!userId) return { error: new Error("Not authenticated") };
 
     const rows = await sql`
-      INSERT INTO books (title, description, user_id, shelf_id)
-      VALUES (${title}, ${description}, ${userId}, ${shelfId ?? null})
+      INSERT INTO books (title, description, user_id, shelf_id, topic_id)
+      VALUES (${title}, ${description}, ${userId}, ${shelfId ?? null}, ${topicId ?? null})
       RETURNING *
     `;
     const book = rows[0] as Book;

@@ -5,12 +5,13 @@ import { sql } from "~/lib/db";
 export interface Shelf {
   id: string;
   user_id: string;
+  topic_id: string | null;
   name: string;
   position: number;
   created_at: string;
 }
 
-export function useShelves() {
+export function useShelves(topicId?: string | null) {
   const { user } = useAuth();
   const userId = user?.id;
   const [shelves, setShelves] = useState<Shelf[]>([]);
@@ -20,13 +21,20 @@ export function useShelves() {
   const fetchShelves = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
-    const rows = await sql`
-      SELECT * FROM shelves WHERE user_id = ${userId} ORDER BY position ASC, created_at ASC
-    `;
+    let rows;
+    if (topicId) {
+      rows = await sql`
+        SELECT * FROM shelves WHERE user_id = ${userId} AND topic_id = ${topicId} ORDER BY position ASC, created_at ASC
+      `;
+    } else {
+      rows = await sql`
+        SELECT * FROM shelves WHERE user_id = ${userId} AND topic_id IS NULL ORDER BY position ASC, created_at ASC
+      `;
+    }
     setShelves(rows as Shelf[]);
     setLoading(false);
     hasFetched.current = true;
-  }, [userId]);
+  }, [userId, topicId]);
 
   useEffect(() => {
     fetchShelves();
@@ -35,8 +43,8 @@ export function useShelves() {
   const createShelf = async (name: string) => {
     if (!userId) return;
     const rows = await sql`
-      INSERT INTO shelves (name, user_id, position)
-      VALUES (${name}, ${userId}, (
+      INSERT INTO shelves (name, user_id, topic_id, position)
+      VALUES (${name}, ${userId}, ${topicId ?? null}, (
         SELECT COALESCE(MAX(position), -1) + 1 FROM shelves WHERE user_id = ${userId}
       ))
       RETURNING *
